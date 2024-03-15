@@ -35,7 +35,7 @@ func TestRead(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("messages's length is %v", len(messages))
+	t.Logf("length of messages is %d", len(messages))
 }
 
 // TestReadChannel is a test function for the ReadCh function in the sseread package.
@@ -65,7 +65,7 @@ func TestReadChannel(t *testing.T) {
 		}
 		t.Log(msg.ID, msg.Event, string(msg.Data))
 	}
-	t.Logf("messages's length is %v", len(messages))
+	t.Logf("length of messages is %d", len(messages))
 
 }
 
