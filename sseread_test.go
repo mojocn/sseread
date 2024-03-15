@@ -30,7 +30,7 @@ func TestRead(t *testing.T) {
 		if msg != nil {
 			messages = append(messages, *msg)
 		}
-		t.Log(msg.ID, msg.Event, string(msg.Data))
+		t.Log(msg.ID, msg.Event, string(msg.Data), msg.Retry)
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -63,7 +63,7 @@ func TestReadChannel(t *testing.T) {
 		if msg != nil {
 			messages = append(messages, *msg)
 		}
-		t.Log(msg.ID, msg.Event, string(msg.Data))
+		t.Log(msg.ID, msg.Event, string(msg.Data), msg.Retry)
 	}
 	t.Logf("length of messages is %d", len(messages))
 
