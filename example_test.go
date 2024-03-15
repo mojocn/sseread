@@ -1,76 +1,90 @@
-package sseread
+package sseread_test
 
 import (
-	"io"
-	"log"
+	"fmt"
+	"github.com/mojocn/sseread"
 	"net/http"
 	"strings"
-	"testing"
 )
 
-// TestRead is a test function for the Read function in the sseread package.
-// It sends a GET request to the specified URL and reads the response body as Server-Sent Events.
-// For each event, it appends it to the messages slice and logs the event ID, event type, and event data.
-// If an error occurs during the GET request or the reading of the events, it fails the test.
-func TestRead(t *testing.T) {
+// ExampleRead is a function that demonstrates how to read Server-Sent Events (SSE) from a specific URL.
+func ExampleRead() {
+	// Send a GET request to the specified URL.
 	response, err := http.Get("https://mojotv.cn/api/sse") //API source code from https://github.com/mojocn/gptchat/blob/main/app/api/sse/route.ts
+	// If an error occurs during the GET request, print the error and return from the function.
 	if err != nil {
-		t.Fatal(err)
+		fmt.Println(err)
+		return
 	}
 
+	// Get the Content-Type header from the response and convert it to lowercase.
 	ct := strings.ToLower(response.Header.Get("Content-Type"))
+	// If the Content-Type is not "text/event-stream", print a message and continue.
 	if !strings.Contains(ct, "text/event-stream") {
-		t.Fatal("expect content-type: text/event-stream, but actual", ct)
+		fmt.Println("expect content-type: text/event-stream, but actual", ct)
 	}
 
-	defer safeClose(response.Body) //don't forget to close the response body
+	// Ensure the response body is closed when the function returns.
+	defer response.Body.Close() //don't forget to close the response body
 
-	var messages []Event
-	err = Read(response.Body, func(msg *Event) {
+	// Declare a slice to store the SSE messages.
+	var messages []sseread.Event
+	// Read the SSE messages from the response body.
+	err = sseread.Read(response.Body, func(msg *sseread.Event) {
+		// If the message is not nil, append it to the messages slice.
 		if msg != nil {
 			messages = append(messages, *msg)
 		}
-		t.Log(msg.ID, msg.Event, string(msg.Data))
+		// Print the ID, event type, and data of the message.
+		fmt.Println(msg.ID, msg.Event, string(msg.Data))
 	})
+	// If an error occurs while reading the SSE messages, print the error and return from the function.
 	if err != nil {
-		t.Fatal(err)
+		fmt.Println(err)
+		return
 	}
-	t.Logf("length of messages is %d", len(messages))
+	// Print the number of messages read.
+	fmt.Printf("length of messages is %d", len(messages))
 }
 
-// TestReadChannel is a test function for the ReadCh function in the sseread package.
-// It sends a GET request to the specified URL and reads the response body as Server-Sent Events.
-// For each event, it logs the event ID, event type, and event data.
-// If an error occurs during the GET request or the reading of the events, it fails the test.
-func TestReadChannel(t *testing.T) {
+// ExampleReadCh is a function that demonstrates how to read Server-Sent Events (SSE) from a specific URL using channels.
+func ExampleReadCh() {
+	// Send a GET request to the specified URL.
 	response, err := http.Get("https://mojotv.cn/api/sse") //API source code from https://github.com/mojocn/gptchat/blob/main/app/api/sse/route.ts
+	// If an error occurs during the GET request, print the error and return from the function.
 	if err != nil {
-		t.Fatal(err)
+		fmt.Println(err)
+		return
 	}
-	defer safeClose(response.Body) //don't forget to close the response body
 
+	// Get the Content-Type header from the response and convert it to lowercase.
 	ct := strings.ToLower(response.Header.Get("Content-Type"))
+	// If the Content-Type is not "text/event-stream", print a message and continue.
 	if !strings.Contains(ct, "text/event-stream") {
-		t.Fatal("expect content-type: text/event-stream, but actual", ct)
+		fmt.Println("expect content-type: text/event-stream, but actual", ct)
 	}
 
-	channel, err := ReadCh(response.Body)
+	// Ensure the response body is closed when the function returns.
+	defer response.Body.Close() //don't forget to close the response body
+
+	// Read the SSE messages from the response body into a channel.
+	channel, err := sseread.ReadCh(response.Body)
+	// If an error occurs while reading the SSE messages, print the error and return from the function.
 	if err != nil {
-		t.Fatal(err)
+		fmt.Println(err)
+		return
 	}
-	var messages []Event
+	// Declare a slice to store the SSE messages.
+	var messages []sseread.Event
+	// Loop over the channel to receive the SSE messages.
 	for msg := range channel {
+		// If the message is not nil, append it to the messages slice.
 		if msg != nil {
 			messages = append(messages, *msg)
 		}
-		t.Log(msg.ID, msg.Event, string(msg.Data))
+		// Print the ID, event type, and data of the message.
+		fmt.Println(msg.ID, msg.Event, string(msg.Data))
 	}
-	t.Logf("length of messages is %d", len(messages))
-
-}
-
-func safeClose(closer io.Closer) {
-	if err := closer.Close(); err != nil {
-		log.Println("error closing:", err)
-	}
+	// Print the number of messages read.
+	fmt.Printf("length of messages is %d", len(messages))
 }
