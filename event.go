@@ -1,7 +1,6 @@
 package sseread
 
 import (
-	"bytes"
 	"encoding/json"
 	"strings"
 )
@@ -33,11 +32,26 @@ func (e *Event) ParseEventLine(lineType string, lineData []byte) {
 	case "retry":
 		e.ID = string(lineData) // If the event type is "retry", update the Retry field.
 	case "data":
-		if bytes.EqualFold(lineData, []byte("[DONE]")) {
-			e.Data = nil
-		} else {
-			e.Data = lineData // If the event type is "data", update the Data field.
-		}
+		e.Data = lineData // If the event type is "data", update the Data field.
+
 	}
 
+}
+
+// IsSkip is a method of the Event struct that checks if the event should be skipped.
+// It returns true if the Data field of the event is empty, null, undefined, or "[DONE]".
+// Otherwise, it returns false.
+func (e *Event) IsSkip() bool {
+	// Check if the Data field is empty.
+	if len(e.Data) == 0 {
+		return true
+	}
+	// Convert the Data field to a string and remove leading and trailing spaces.
+	str := strings.TrimSpace(string(e.Data))
+	// Check if the Data field is "", "null", "undefined", or "[DONE]".
+	if str == "" || str == "null" || str == "undefined" || str == "[DONE]" {
+		return true
+	}
+	// If none of the above conditions are met, return false.
+	return false
 }

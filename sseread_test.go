@@ -70,7 +70,7 @@ func TestReadFromCloudflareLama2(t *testing.T) {
 
 	// Iterate over the events from the channel
 	for event := range channel {
-		if event == nil {
+		if event == nil || event.IsSkip() {
 			continue
 		}
 
