@@ -23,7 +23,7 @@ jobs:
 
     - name: Run coverage
       run: go test -race -coverprofile=coverage.txt -covermode=atomic
-      with:
+      env:
         CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         CF_API_TOKEN : ${{ secrets.CF_API_TOKEN  }}
 
