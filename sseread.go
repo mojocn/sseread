@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"io"
-	"log"
 )
 
 // Read reads from an io.Reader, parses the data as Server-Sent Events, and invokes the provided callback function for each event.
@@ -38,7 +37,6 @@ func ReadCh(responseBody io.Reader) (messages <-chan *Event, err error) {
 		ev := new(Event)
 		for scanner.Scan() {
 			line := scanner.Bytes()
-			log.Println(string(line))
 			firstColonIndex := bytes.IndexByte(line, ':')
 			if firstColonIndex == -1 {
 				channel <- ev
