@@ -78,7 +78,7 @@ func TestReadFromCloudflareLama2(t *testing.T) {
 		e := new(llamaMsg)
 		err := json.Unmarshal(event.Data, e)
 		if err != nil {
-			t.Error(err)
+			t.Error(err, string(event.Data))
 		} else {
 			// Append the response to the fulltext string
 			fulltext += e.Response
