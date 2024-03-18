@@ -15,13 +15,12 @@ type CfTextGenerationResponse struct {
 }
 
 type CfTextGenerationMsg struct {
-	Role string `json:"role"`
+	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 
-
-type CfTextGenerationArg struct{
-	Stream bool `json:"stream,omitempty"`
+type CfTextGenerationArg struct {
+	Stream   bool                  `json:"stream,omitempty"`
 	Messages []CfTextGenerationMsg `json:"messages,omitempty"`
 }
 
@@ -31,16 +30,12 @@ func (c *CfTextGenerationArg) body() (io.ReadCloser, error) {
 	return io.NopCloser(buff), err
 }
 
-
 type CloudflareAI struct {
 	AccountID string
 	APIToken  string
-
 }
 
 var httpClient = &http.Client{}
-
-
 
 var modelsTextGeneration = []string{
 	//https://dash.cloudflare.com/0a76b889e644c012524110042e6f197e/ai/workers-ai
@@ -81,11 +76,11 @@ func (c *CloudflareAI) modelCheck(model string) error {
 			return nil
 		}
 	}
-	return errors.New("model not found: "+model)
+	return errors.New("model not found: " + model)
 }
 
 func (c *CloudflareAI) Do(model string, arg *CfTextGenerationArg) (*http.Response, error) {
-	if c.AccountID == "" || c.APIToken == "" {	
+	if c.AccountID == "" || c.APIToken == "" {
 		return nil, errors.New("CF_ACCOUNT_ID and CF_API_TOKEN environment variables are required")
 	}
 

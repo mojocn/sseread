@@ -23,7 +23,7 @@ func TestReadFromCloudflareLama2(t *testing.T) {
 	}
 
 	// Send the POST request
-	response, err := cf.Do("@cf/meta/llama-2-7b-chat-fp8b", &CfTextGenerationArg{
+	response, err := cf.Do("@cf/meta/llama-2-7b-chat-int8", &CfTextGenerationArg{
 		Stream: true,
 		Messages: []CfTextGenerationMsg{
 			{Role: "system", Content: "You are a chatbot."},

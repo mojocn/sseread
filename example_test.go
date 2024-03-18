@@ -1,11 +1,83 @@
 package sseread_test
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/mojocn/sseread"
+	"io"
+	"log"
 	"net/http"
+	"os"
 	"strings"
+
+	"github.com/mojocn/sseread"
 )
+
+func ExampleDo() {
+	// Retrieve the account ID and API token from the environment variables
+	accountID := os.Getenv("CF_ACCOUNT_ID")
+	apiToken := os.Getenv("CF_API_TOKEN")
+
+	cf := &sseread.CloudflareAI{
+		AccountID: accountID,
+		APIToken:  apiToken,
+	}
+
+	// Send the POST request
+	response, err := cf.Do("@cf/meta/llama-2-7b-chat-fp8b", &sseread.CfTextGenerationArg{
+		Stream: true,
+		Messages: []sseread.CfTextGenerationMsg{
+			{Role: "system", Content: "You are a chatbot."},
+			{Role: "user", Content: "What is your name?"},
+		}})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Ensure the response body is closed after the function returns
+	defer response.Body.Close()
+
+	// Check the response status code
+	if response.StatusCode != http.StatusOK {
+		all, err := io.ReadAll(response.Body)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		log.Fatal(string(all))
+		return
+	}
+
+	// Read the response body as Server-Sent Events
+	channel, err := sseread.ReadCh(response.Body)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Initialize an empty string to store the full text of the responses
+	fulltext := ""
+
+	// Iterate over the events from the channel
+	for event := range channel {
+		if event == nil || event.IsSkip() {
+			continue
+		}
+
+		// Parse the JSON object from the event data
+		e := new(sseread.CfTextGenerationResponse)
+		err := json.Unmarshal(event.Data, e)
+		if err != nil {
+			log.Fatal(err, string(event.Data))
+		} else {
+			// Append the response to the fulltext string
+			fulltext += e.Response
+		}
+	}
+
+	// Log the full text of the responses
+	fmt.Println(fulltext)
+}
 
 // ExampleRead is a function that demonstrates how to read Server-Sent Events (SSE) from a specific URL.
 func ExampleRead() {
