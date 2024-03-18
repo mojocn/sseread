@@ -18,7 +18,9 @@ simple examples of how to use the library.
 
 1. [read SSE by callback](https://pkg.go.dev/github.com/mojocn/sseread#example-Read) 
 2. [read SSE by channel](https://pkg.go.dev/github.com/mojocn/sseread#example-ReadCh)
+3. [cloudflare AI text generation example](cloudflare_ai_test.go)
 
+```go
 
 ## Testing
 
