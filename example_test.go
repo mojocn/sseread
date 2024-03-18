@@ -12,7 +12,7 @@ import (
 	"github.com/mojocn/sseread"
 )
 
-func ExampleDo() {
+func ExampleCloudflareAI_Do() {
 	// Retrieve the account ID and API token from the environment variables
 	accountID := os.Getenv("CF_ACCOUNT_ID")
 	apiToken := os.Getenv("CF_API_TOKEN")
