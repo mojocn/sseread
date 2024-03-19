@@ -1,3 +1,7 @@
+# Server Sent Events Reader
+
+
+
 [![GoDoc](https://pkg.go.dev/badge/github.com/mojocn/sseread?status.svg)](https://pkg.go.dev/github.com/mojocn/sseread?tab=doc)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mojocn/sseread?)](https://goreportcard.com/report/github.com/mojocn/sseread)
 [![codecov](https://codecov.io/gh/mojocn/sseread/graph/badge.svg?token=3UC1L5K4LY)](https://codecov.io/gh/mojocn/sseread)
@@ -5,7 +9,6 @@
 [![Follow mojocn](https://img.shields.io/github/followers/mojocn?label=Follow&style=social)](https://github.com/mojocn)
 
 
-# Server Sent Events Reader
 
 This is a simple library of how to read Server Sent Events (SSE) stream from `Response.Body` in Golang.
 
