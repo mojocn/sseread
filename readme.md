@@ -10,8 +10,7 @@
 
 
 
-This is a simple library of how to read Server Sent Events (SSE) stream from `Response.Body` in Golang.
-
+This is a straightforward library illustrating the method to read Server Sent Events (SSE) stream from the Response.Body in Golang.
 
 ## Usage
 download the library using
@@ -23,7 +22,6 @@ simple examples of how to use the library.
 2. [read SSE by channel](https://pkg.go.dev/github.com/mojocn/sseread#example-ReadCh)
 3. [cloudflare AI text generation example](cloudflare_ai_test.go)
 
-```go
 
 ## Testing
 
