@@ -9,34 +9,44 @@ import (
 )
 
 // https://developers.cloudflare.com/workers-ai/models/zephyr-7b-beta-awq/#using-streaming
+// CfTextGenerationResponse represents the response structure for text generation from the Cloudflare AI API.
 type CfTextGenerationResponse struct {
 	Response string `json:"response"`
 	P        string `json:"p"`
 }
 
+// CfTextGenerationMsg represents a message for text generation in Cloudflare AI.
 type CfTextGenerationMsg struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 
+// CfTextGenerationArg represents the arguments for text generation in Cloudflare AI.
 type CfTextGenerationArg struct {
 	Stream   bool                  `json:"stream,omitempty"`
 	Messages []CfTextGenerationMsg `json:"messages,omitempty"`
 }
 
+// body returns the request body as an io.ReadCloser and any encoding error encountered.
 func (c *CfTextGenerationArg) body() (io.ReadCloser, error) {
 	buff := bytes.NewBuffer(nil)
 	err := json.NewEncoder(buff).Encode(c)
 	return io.NopCloser(buff), err
 }
 
+// CloudflareAI represents the configuration for accessing the Cloudflare AI service.
 type CloudflareAI struct {
-	AccountID string
-	APIToken  string
+	AccountID string // AccountID is the identifier for the Cloudflare account.
+	APIToken  string // APIToken is the authentication token for accessing the Cloudflare AI service.
 }
 
 var httpClient = &http.Client{}
 
+// modelsTextGeneration is a slice of strings that represents a list of models used for text generation.
+// Each string in the slice corresponds to a specific model.
+// The models are stored in the Cloudflare AI service and can be accessed using the provided URLs.
+// The list is divided into multiple pages, with each page containing a set of models.
+// To access a specific model, you can refer to its corresponding URL.
 var modelsTextGeneration = []string{
 	//https://dash.cloudflare.com/0a76b889e644c012524110042e6f197e/ai/workers-ai
 	//page 1
@@ -79,6 +89,8 @@ func (c *CloudflareAI) modelCheck(model string) error {
 	return errors.New("model not found: " + model)
 }
 
+// Do executes the Cloudflare AI model with the specified model and arguments.
+// It returns the HTTP response and an error, if any.
 func (c *CloudflareAI) Do(model string, arg *CfTextGenerationArg) (*http.Response, error) {
 	if c.AccountID == "" || c.APIToken == "" {
 		return nil, errors.New("CF_ACCOUNT_ID and CF_API_TOKEN environment variables are required")
