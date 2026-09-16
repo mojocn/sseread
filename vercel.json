@@ -1,4 +1,4 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "buildCommand": "go build -o server ./faasvercel/main.go"
+    "buildCommand": "go build -o server ./cmd/server/main.go"
 }
