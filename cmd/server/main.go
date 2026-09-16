@@ -12,9 +12,14 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /netdog-http", netdog.HandlerDogHTTP)
 	mux.HandleFunc("POST /netdog-network", netdog.HandlerDogNetwork)
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /ip", func(w http.ResponseWriter, r *http.Request) {
+		ip := r.RemoteAddr
+		clientIP := r.Header.Get("X-Forwarded-For")
+		if clientIP == "" {
+			clientIP = ip
+		}
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("ok"))
+		_, _ = w.Write([]byte(clientIP))
 	})
 	port := os.Getenv("PORT")
 	if port == "" {
