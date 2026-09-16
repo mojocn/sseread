@@ -1,5 +1,0 @@
-[functions]
-directory = "faasnetlify"
-
-[build]
-publish = "."
