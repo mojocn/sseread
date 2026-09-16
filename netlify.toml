@@ -1,0 +1,14 @@
+[[redirects]]
+from = "/netdog-http"
+to = "/.netlify/functions/netdog-http"
+status = 200
+
+[[redirects]]
+from = "/netdog-network"
+to = "/.netlify/functions/netdog-network"
+status = 200
+
+[[redirects]]
+from = "/ip"
+to = "/.netlify/functions/ip"
+status = 200
