@@ -8,6 +8,7 @@ import (
 	"github.com/mojocn/sseread/netdog"
 )
 
+// for FAAS of Vercel
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /netdog-http", netdog.HandlerDogHTTP)
