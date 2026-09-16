@@ -2,6 +2,7 @@ package sseread
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 )
 
@@ -23,17 +24,25 @@ type Event struct {
 // ParseEventLine is a method of the Event struct that parses an event field based on the event type.
 // It takes an event type and event data as input, and updates the corresponding field in the Event struct.
 func (e *Event) ParseEventLine(lineType string, lineData []byte) {
+	if len(lineData) > 0 && lineData[0] == ' ' {
+		lineData = lineData[1:]
+	}
 
-	switch strings.TrimSpace(lineType) {
+	switch lineType {
 	case "event":
-		e.Event = string(lineData) // If the event type is "event", update the Event field.
+		e.Event = string(lineData)
 	case "id":
-		e.ID = string(lineData) // If the event type is "id", update the ID field.
+		e.ID = string(lineData)
 	case "retry":
-		e.ID = string(lineData) // If the event type is "retry", update the Retry field.
+		retry, err := strconv.ParseUint(string(lineData), 10, 0)
+		if err == nil {
+			e.Retry = uint(retry)
+		}
 	case "data":
-		e.Data = lineData // If the event type is "data", update the Data field.
-
+		if len(e.Data) > 0 {
+			e.Data = append(e.Data, '\n')
+		}
+		e.Data = append(e.Data, lineData...)
 	}
 
 }
