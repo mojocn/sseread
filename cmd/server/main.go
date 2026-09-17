@@ -11,9 +11,9 @@ import (
 // for FAAS of Vercel
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /netdog-http", netdog.HandlerDogHTTP)
-	mux.HandleFunc("POST /netdog-network", netdog.HandlerDogNetwork)
-	mux.HandleFunc("GET /ip", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/netdog-http", netdog.HandlerDogHTTP)
+	mux.HandleFunc("/netdog-network", netdog.HandlerDogNetwork)
+	mux.HandleFunc("/ip", func(w http.ResponseWriter, r *http.Request) {
 		ip := r.RemoteAddr
 		clientIP := r.Header.Get("X-Forwarded-For")
 		if clientIP == "" {
