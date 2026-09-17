@@ -20,7 +20,7 @@ type DogWatchRequestHTTP struct {
 	// Body contains the request body.
 	Body []byte `json:"body"`
 	// Timeout is clamped to the range from one second to one minute.
-	Timeout time.Duration `json:"timeout"` //1~60s
+	Timeout int `json:"timeout"` //in second 1~60s
 }
 
 // DogWatchResultHTTP contains the result of an HTTP connectivity check.
@@ -39,14 +39,14 @@ const (
 	maxTimeout = 60 * time.Second
 )
 
-func clampTimeout(timeout time.Duration) time.Duration {
-	if timeout < minTimeout {
+func clampTimeout(timeout int) time.Duration {
+	if timeout < 1 {
 		return minTimeout
 	}
-	if timeout > maxTimeout {
+	if timeout > 60 {
 		return maxTimeout
 	}
-	return timeout
+	return time.Duration(timeout) * time.Second
 }
 
 // DogWatchHttp performs an HTTP connectivity check and returns its response metadata and body.
@@ -64,6 +64,7 @@ func DogWatchHttp(param *DogWatchRequestHTTP) DogWatchResultHTTP {
 		},
 	}
 	if response != nil {
+		result.Code = response.StatusCode
 		result.Headers = response.Header
 		defer response.Body.Close()
 		result.Body, err = io.ReadAll(io.LimitReader(response.Body, maxHTTPResponseBodyBytes))
@@ -86,13 +87,14 @@ type DogWatchRequestNetwork struct {
 	// Port is the destination port number.
 	Port string `json:"port"` //port number eg 80 443
 	// Timeout is clamped to the range from one second to one minute.
-	Timeout time.Duration `json:"timeout"` //1~60s
+	Timeout int `json:"timeout"` //in second 1~60s
 	// TLS controls whether a TLS handshake is performed after connecting.
 	TLS bool `json:"tls"` // whether to check TLS
 }
 
 // DogWatchResult contains the result of a network connectivity check.
 type DogWatchResult struct {
+	Code int `json:"code"` // HTTP status code or network error code 0 or 1, code 200 is OK-SUCCESS
 	// Cost is the time spent performing the check.
 	Cost time.Duration `json:"cost"`
 	// TlsIssuer is the issuer of the peer certificate, when TLS is checked.
@@ -118,6 +120,11 @@ func DogWatchNetwork(param *DogWatchRequestNetwork) DogWatchResult {
 	result := DogWatchResult{
 		Cost:  cost,
 		Error: err,
+	}
+	if err == nil {
+		result.Code = 200
+	} else {
+		result.Code = 0
 	}
 	setCertificateMetadata(&result, cert)
 	return result

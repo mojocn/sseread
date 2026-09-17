@@ -36,7 +36,7 @@ func TestDogWatchHttp(t *testing.T) {
 		URL:     server.URL,
 		Headers: map[string]string{"X-Test": "header-value"},
 		Body:    []byte("request-body"),
-		Timeout: 100 * time.Millisecond,
+		Timeout: 100,
 	}
 	result := DogWatchHttp(request)
 
@@ -49,8 +49,8 @@ func TestDogWatchHttp(t *testing.T) {
 	if result.Headers.Get("X-Response") != "response-value" {
 		t.Errorf("X-Response header = %q, want response-value", result.Headers.Get("X-Response"))
 	}
-	if request.Timeout != 100*time.Millisecond {
-		t.Errorf("timeout = %s, want input unchanged", request.Timeout)
+	if request.Timeout != 100 {
+		t.Errorf("timeout = %d, want input unchanged", request.Timeout)
 	}
 	if result.Cost <= 0 {
 		t.Errorf("cost = %s, want positive duration", result.Cost)
@@ -63,14 +63,14 @@ func TestDogWatchHttpClampsTimeoutAndLimitsBody(t *testing.T) {
 	}))
 	defer server.Close()
 
-	request := &DogWatchRequestHTTP{URL: server.URL, Timeout: 61 * time.Second}
+	request := &DogWatchRequestHTTP{URL: server.URL, Timeout: 61}
 	result := DogWatchHttp(request)
 
 	if result.Error != nil {
 		t.Fatalf("DogWatchHttp returned error: %v", result.Error)
 	}
-	if request.Timeout != 61*time.Second {
-		t.Errorf("timeout = %s, want input unchanged", request.Timeout)
+	if request.Timeout != 61 {
+		t.Errorf("timeout = %d	, want input unchanged", request.Timeout)
 	}
 	if len(result.Body) != maxHTTPResponseBodyBytes {
 		t.Errorf("response body length = %d, want %d", len(result.Body), maxHTTPResponseBodyBytes)
@@ -78,7 +78,7 @@ func TestDogWatchHttpClampsTimeoutAndLimitsBody(t *testing.T) {
 }
 
 func TestDogWatchHttpInvalidURL(t *testing.T) {
-	request := &DogWatchRequestHTTP{Method: http.MethodGet, URL: "://invalid", Timeout: time.Second}
+	request := &DogWatchRequestHTTP{Method: http.MethodGet, URL: "://invalid", Timeout: 1}
 	result := DogWatchHttp(request)
 
 	if result.Error == nil {
@@ -105,15 +105,15 @@ func TestDogWatchNetworkTCP(t *testing.T) {
 		Network: "TCP",
 		Host:    host,
 		Port:    port,
-		Timeout: 61 * time.Second,
+		Timeout: 61,
 	}
 	result := DogWatchNetwork(request)
 
 	if result.Error != nil {
 		t.Fatalf("DogWatchNetwork returned error: %v", result.Error)
 	}
-	if request.Timeout != 61*time.Second {
-		t.Errorf("timeout = %s, want input unchanged", request.Timeout)
+	if request.Timeout != 61 {
+		t.Errorf("timeout = %d, want input unchanged", request.Timeout)
 	}
 	if result.Cost <= 0 {
 		t.Errorf("cost = %s, want positive duration", result.Cost)
@@ -133,7 +133,7 @@ func TestDogWatchNetworkTLS(t *testing.T) {
 		Network: "tcp",
 		Host:    host,
 		Port:    port,
-		Timeout: time.Second,
+		Timeout: 1,
 		TLS:     true,
 	})
 
