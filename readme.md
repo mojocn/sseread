@@ -1,27 +1,63 @@
 # Server Sent Events Reader
 
-
-
 [![GoDoc](https://pkg.go.dev/badge/github.com/mojocn/sseread?status.svg)](https://pkg.go.dev/github.com/mojocn/sseread?tab=doc)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mojocn/sseread?)](https://goreportcard.com/report/github.com/mojocn/sseread)
 [![codecov](https://codecov.io/gh/mojocn/sseread/graph/badge.svg?token=3UC1L5K4LY)](https://codecov.io/gh/mojocn/sseread)
 [![Go version](https://img.shields.io/github/go-mod/go-version/mojocn/sseread.svg)](https://github.com/mojocn/sseread)
 [![Follow mojocn](https://img.shields.io/github/followers/mojocn?label=Follow&style=social)](https://github.com/mojocn)
 
-
-
 This is a straightforward library illustrating the method to read Server Sent Events (SSE) stream from the Response.Body in Golang.
 
 ## Usage
+
 download the library using
 `go get -u github.com/mojocn/sseread@latest`
 
 simple examples of how to use the library.
 
-1. [read SSE by callback](https://pkg.go.dev/github.com/mojocn/sseread#example-Read) 
+1. [read SSE by callback](https://pkg.go.dev/github.com/mojocn/sseread#example-Read)
 2. [read SSE by channel](https://pkg.go.dev/github.com/mojocn/sseread#example-ReadCh)
 3. [cloudflare AI text generation example](cloudflare_ai_test.go)
 
+### Traceroute
+
+`netdog.Traceroute` sends UDP probes and listens for ICMP responses. Raw socket
+access may require elevated privileges on your operating system.
+
+```go
+package main
+
+import (
+	"fmt"
+	"net"
+
+	"github.com/mojocn/sseread/netdog"
+)
+
+func main() {
+	options := &netdog.TracerouteOptions{}
+	options.SetMaxHops(16)
+	options.SetRetries(2)
+	options.SetTimeoutMs(500)
+
+	hops := make(chan netdog.TracerouteHop, options.MaxHops())
+	result, err := netdog.Traceroute("www.baidu.com", options, hops)
+	if err != nil {
+		fmt.Println("traceroute:", err)
+		return
+	}
+
+	for hop := range hops {
+		if hop.Success {
+			fmt.Printf("%d  %-39s  %s\n", hop.TTL, hop.HostOrAddressString(), hop.ElapsedTime)
+			continue
+		}
+		fmt.Printf("%d  *\n", hop.TTL)
+	}
+
+	fmt.Printf("destination: %s (%d hops)\n", net.IP(result.DestinationAddress[:]), len(result.Hops))
+}
+```
 
 ## Testing
 
@@ -29,8 +65,3 @@ simple examples of how to use the library.
 # git clone https://github.com/mojocn/sseread.git && cd sseread
 go test -v
 ```
-
-
-
-
-

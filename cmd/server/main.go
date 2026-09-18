@@ -13,6 +13,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/netdog-http", netdog.HandlerDogHTTP)
 	mux.HandleFunc("/netdog-network", netdog.HandlerDogNetwork)
+	mux.HandleFunc("/netdog-traceroute", netdog.HandlerDogTraceroute)
 	mux.HandleFunc("/ip", func(w http.ResponseWriter, r *http.Request) {
 		ip := r.RemoteAddr
 		clientIP := r.Header.Get("X-Forwarded-For")

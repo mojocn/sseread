@@ -9,6 +9,13 @@ to = "/.netlify/functions/netdog-network"
 status = 200
 
 [[redirects]]
+from = "/netdog-traceroute"
+to = "/.netlify/functions/traceroute"
+status = 200
+
+
+[[redirects]]
 from = "/ip"
 to = "/.netlify/functions/ip"
 status = 200
+
